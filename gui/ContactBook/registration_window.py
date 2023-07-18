@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QLineEd
 from PySide6.QtCore import Qt, QThread, Signal
 
 class RegistrationWindow(QDialog):
+    userRegistered = Signal()
     class RegistrationThread(QThread):
         progressChanged = Signal(str)
 
@@ -11,7 +12,7 @@ class RegistrationWindow(QDialog):
             super().__init__()
             self.username = username
             self.password = password
-            self.progressChanged = Signal(str)
+            
 
         def run(self):
             # Save the user's input to a CSV file
@@ -122,17 +123,13 @@ class RegistrationWindow(QDialog):
         if password != confirm_password:
             return
 
-        # Create a registration thread if not already created
-        if not self.registration_thread:
-            self.registration_thread = self.RegistrationThread(username, password)
-            # Connect the progressChanged signal to the progress dialog
-            self.registration_thread.progressChanged.connect(self.progress_dialog.setLabelText)
-            # Connect the finished signal to the registrationFinished() function
-            self.registration_thread.finished.connect(self.registrationFinished)
-            # Start the registration thread
-            self.registration_thread.start()
+        # Create a registration thread
+        self.registration_thread = self.RegistrationThread(username, password)
 
-    def registrationFinished(self):
+        # Start the registration thread
+        self.registration_thread.start()
+
+def registrationFinished(self):
         # Hide the progress dialog
         self.progress_dialog.hide()
 
